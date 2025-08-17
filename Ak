@@ -1,0 +1,127 @@
+Repo Blueprint for AI Support Copilot
+
+1. Directory Structure
+
+ai-support-copilot/
+
+├── apps/
+
+│   ├── backend/        # FastAPI, Postgres models, workers
+
+│   ├── frontend/       # Next.js, React, Tailwind, shadcn
+
+├── packages/
+
+│   ├── shared/         # shared types, utils, API client
+
+│   ├── embeddings/     # pgvector, ingestion scripts
+
+├── infra/
+
+│   ├── docker/         # Dockerfiles, docker-compose for dev
+
+│   ├── terraform/      # IaC for cloud resources
+
+├── scripts/            # one-off maintenance jobs
+
+├── tests/              # pytest for backend, playwright for frontend
+
+├── README.md
+
+└── turbo.json          # monorepo config
+
+2. Backend Skeleton (FastAPI)
+
+from fastapi import FastAPI, Depends from pydantic import BaseModel
+
+app = FastAPI()
+
+class IngestRequest(BaseModel): source: str data: dict
+
+@app.post("/ingest") def ingest(req: IngestRequest): # TODO: save to Postgres, create embeddings return {"status": "ok"}
+
+class QueryRequest(BaseModel): tenant_id: str message: str
+
+@app.post("/respond") def respond(req: QueryRequest): # TODO: retrieve from vector DB, call LLM, apply guardrails return {"response": "Sample AI reply"}
+
+3. Frontend Skeleton (Next.js)
+
+- pages/index.tsx: Setup wizard and dashboard
+
+- components/WorkflowBuilder.tsx: visual workflow editor
+
+- lib/api.ts: client for FastAPI endpoints
+
+4. Database Schema (Postgres + pgvector)
+
+tables:
+
+tenants(id, name, created_at)
+
+users(id, tenant_id, email, role)
+
+sources(id, tenant_id, type, metadata)
+
+documents(id, tenant_id, source_id, content, embedding vector)
+
+workflows(id, tenant_id, name, config)
+
+actions(id, workflow_id, type, params)
+
+analytics_events(id, tenant_id, type, ts, payload)
+
+5. Worker Queue (Redis + RQ or Celery)
+
+- jobs: embedding creation, document ingestion, workflow execution
+
+6. Infra Basics
+
+- Docker for local dev
+
+- Terraform for cloud infra: Postgres, Redis, object storage, API servers
+
+- Prometheus + Grafana + Sentry for observability
+
+Lightweight Financial Model
+
+Revenue Projections
+
+Mid market: 1700 accounts x $30k = $51M
+
+Enterprise: 250 accounts x $200k = $50M
+
+Total ARR = $101M
+
+Gross Margin = 85%
+
+CAC mid = $18k, enterprise = $80k
+
+Payback period: 6 to 8 months
+
+Expense Buckets (year 3)
+
+- Engineering: $8M
+
+- Sales/Marketing: $15M
+
+- G&A + Support: $4M
+
+- COGS (infra, LLM calls): $12M
+
+Operating Margin: positive at $20M ARR
+
+Deployment Steps
+
+1. git clone template
+
+2. docker-compose up --build
+
+3. configure Postgres and pgvector extension
+
+4. create .env for secrets (DB_URL, Redis_URL, API_KEYS)
+
+5. push to cloud with Terraform (AWS/GCP/Azure)
+
+6. add CI/CD pipeline (GitHub Actions)
+
+Next action: Start with ingest endpoint and single refund workflow.
